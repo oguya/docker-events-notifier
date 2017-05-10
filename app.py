@@ -38,7 +38,7 @@ def get_config(env_key):
 
 
 def watch_and_notify_events():
-    event_filters = {"event": "die"}
+    event_filters = {"event": ["create","update","destroy","die"]}
 
     client = docker.DockerClient(base_url='unix://var/run/docker.sock')
 
