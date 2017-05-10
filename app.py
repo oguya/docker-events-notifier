@@ -47,15 +47,29 @@ def watch_and_notify_events():
         attributes = event['Actor']['Attributes']
         when = time.strftime('%Y-%m-%d %H:%M:%S %Z', time.localtime(event['time']))
 
-        message = ":rotating_light:  At _{}_ your container *{}* (_{}_) died. Image: *{}* Exit Code: *{}* Origin: *{}*" \
-            .format(when,
-                    attributes['name'],
-                    container_id,
-                    attributes['image'],
-                    attributes['exitCode'],
-                    socket.gethostname())
+        if event.has_key('status'):
+            event['status'] = "destroyed" if event['status'] == "destroy" else event['status']+'d'
 
-        send_message(slack_channel, message)
+            if event['status'] == 'died':
+                message = ":rotating_light:  At _{}_ your container *{}* (_{}_) {}. Image: *{}* Exit Code: *{}* Origin: *{}*" \
+                    .format(when,
+                            attributes['name'],
+                            container_id,
+                            event['status'],
+                            attributes['image'],
+                            attributes['exitCode'],
+                            socket.gethostname())
+                send_message(slack_channel, message)
+            else:
+                message = ":rotating_light:  At _{}_ your container *{}* (_{}_) {}. Image: *{}* Origin: *{}*" \
+                    .format(when,
+                            attributes['name'],
+                            container_id,
+                            event['status'],
+                            attributes['image'],
+                            socket.gethostname())
+
+                send_message(slack_channel, message)
 
 
 def send_message(channel, message):
