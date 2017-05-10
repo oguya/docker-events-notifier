@@ -1,0 +1,15 @@
+version: '3'
+services:
+  events-notifier:
+    image: "oguya/docker-event-notifier:latest"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - SLACK_API_KEY='PROVIDE_SLACK_API_KEY_HERE'
+      - SLACK_CHANNEL='#PROVIDE_SLACK_CHANNEL_HERE'
+    deploy:
+      placement:
+        constraints:
+          - node.role == manager
+
+# vim : set sw=2 ts=2:
