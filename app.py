@@ -38,7 +38,8 @@ def get_config(env_key):
 
 
 def watch_and_notify_events():
-    event_filters = {"event": ["create","update","destroy","die"]}
+    #event_filters = {"event": ["create","update","destroy","die"]}
+    event_filters = {"event": ["create","update"]}
 
     client = docker.DockerClient(base_url='unix://var/run/docker.sock')
 
@@ -50,7 +51,7 @@ def watch_and_notify_events():
         if event.has_key('status'):
             event['status'] = "destroyed" if event['status'] == "destroy" else event['status']+'d'
 
-            if event['status'] == 'died':
+            if event['status'] == 'died' or event['status'] == 'destroyed':
                 message = ":rotating_light:  At _{}_ your container *{}* (_{}_) {}. Image: *{}* Exit Code: *{}* Origin: *{}*" \
                     .format(when,
                             attributes['name'],
@@ -61,7 +62,7 @@ def watch_and_notify_events():
                             socket.gethostname())
                 send_message(slack_channel, message)
             else:
-                message = ":rotating_light:  At _{}_ your container *{}* (_{}_) {}. Image: *{}* Origin: *{}*" \
+                message = ":whale:  At _{}_ your container *{}* (_{}_) {}. Image: *{}* Origin: *{}*" \
                     .format(when,
                             attributes['name'],
                             container_id,
